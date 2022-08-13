@@ -1,7 +1,7 @@
 
 // https://docs.godotengine.org/en/stable/tutorials/math/vector_math.html
 
-class Vec2 {
+export class Vec2 {
     x; y;
 
     constructor(x: number = 0, y: number = 0) {
@@ -17,8 +17,8 @@ class Vec2 {
         return new Vec2(this.x - v.x, this.y - v.y);
     }
 
-    multiply(v: Vec2): Vec2 {
-        return new Vec2(this.x * v.x, this.y * v.y);
+    multiply(scalar: number): Vec2 {
+        return new Vec2(this.x * scalar, this.y * scalar);
     }
 
     divide(v: Vec2): Vec2 {
