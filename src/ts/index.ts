@@ -74,7 +74,7 @@ function animate() {
     requestAnimationFrame(animate);
 
     // clear the screen to draw again every frame
-    ctx.clearRect(0, 0, 800, 800);
+    ctx.clearRect(0, 0, canvasDims.width, canvasDims.height);
     // draw a marker centre screen to canvasDims
     drawBall(ctx, new Ball(canvasDims.width / 2, canvasDims.height / 2, ballParams.radius));
 
