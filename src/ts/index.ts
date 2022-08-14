@@ -32,32 +32,34 @@ canvas.addEventListener('mousemove', (e) => {
 
 let mouseDown: boolean = false;
 
-// check the mouse pos with setinterval
+// check the mouse pos with setinterval`
+function spawnBall() {
+    const spawnPos = new Vec2(canvasDims.width / 2, canvasDims.height / 2);
+    const vel = mousePos.subtract(spawnPos).multiply(0.03);
+    balls.push(new Ball(canvasDims.width / 2, canvasDims.height / 2, ballParams.radius, vel.x, vel.y, ballParams.elasticity, `hsl(${Math.random()*360}, 100%, 50%)`));
+}
+
 setInterval(() => {
     if (mouseDown) {
-        const spawnPos = new Vec2(canvasDims.width / 2, canvasDims.height / 2);
-        const dist = mousePos.distance(spawnPos);
-        const vel = mousePos.subtract(spawnPos).multiply(0.02);
-        balls.push(new Ball(canvasDims.width / 2, canvasDims.height / 2, ballParams.radius, vel.x, vel.y, ballParams.elasticity, `hsl(${Math.random()*360}, 100%, 50%)`));
+        spawnBall();
     }
-
-    console.log(balls.length);
 }, 50);
 
 
 canvas.addEventListener('mousedown', (e) => {
     const butt = e.button;
-    if(butt === 0) mouseDown = true;
+    if(butt === 2) mouseDown = true;
+    if(butt === 0) spawnBall();
 });
 
 canvas.addEventListener('mouseup', (e) => {
     const butt = e.button;
-    if(butt === 0) mouseDown = false;
+    if(butt === 2) mouseDown = false;
 });
 
 canvas.addEventListener('mouseout', (e) => {
     const butt = e.button;
-    if(butt === 0) mouseDown = false;
+    if(butt === 2) mouseDown = false;
 });
 
 function drawBall(ctx: CanvasRenderingContext2D, ball: Ball): void {
@@ -103,16 +105,30 @@ function physicsUpdate() {
         const yWallsCollide = (ball.position.y > canvasDims.height - ball.radius || ball.position.y < ball.radius);
 
         if (xWallsCollide) {
-            ball.velocity.x = -ball.velocity.x;
-            // minus the elasticity of the ball
-            // ball.removeEnergy(ball.elasticity * 1000);
-            ball.removeEnergy(ball.energy * (1 - ball.elasticity));
-        }
-        if (yWallsCollide) {
-            ball.velocity.y = -ball.velocity.y;
+            if (!ball.xColliding) { // Prevent ball wall collision event from firing multiple times IN A ROW (back to back).
+                ball.xColliding = true;
+                ball.velocity.x = -ball.velocity.x;
+                ball.removeEnergy(ball.energy * (1 - ball.elasticity));
+            }
+        } else {
+            ball.xColliding = false;
         }
 
-        console.log(ball.energy);
+        if (yWallsCollide) {
+            if (!ball.yColliding) {
+                ball.yColliding = true;
+                ball.velocity.y = -ball.velocity.y;
+                ball.removeEnergy(ball.energy * (1 - ball.elasticity));
+            }
+        } else {
+            ball.yColliding = false;
+        }
+
+        // avoids balls sinking into the floor
+        const gravity = yWallsCollide ? 0 : 0.1;
+        ball.applyForce(new Vec2(0, gravity));
+
+
     }
 }
 

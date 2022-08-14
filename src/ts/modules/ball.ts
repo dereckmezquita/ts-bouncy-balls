@@ -4,6 +4,8 @@ import { Vec2 } from "./math";
 export class Ball {
     energy: number = 0;
     elasticity: number = 1;
+    xColliding: boolean = false;
+    yColliding: boolean = false;
     position; drawPosition; velocity; mass; colour; radius;
 
     density: number = 0.01;
@@ -28,6 +30,8 @@ export class Ball {
             this.elasticity = 1;
         } else if (elasticity < 0) {
             this.elasticity = 0;
+        } else {
+            this.elasticity = elasticity;
         }
 
         this.mass = (Math.PI * this.radius ** 2) * this.density;
