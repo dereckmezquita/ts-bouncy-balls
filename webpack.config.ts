@@ -2,7 +2,6 @@
 import path from 'path';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import CopyPlugin from 'copy-webpack-plugin';
 
 const FixStyleOnlyEntriesPlugin = require('webpack-fix-style-only-entries');
 
