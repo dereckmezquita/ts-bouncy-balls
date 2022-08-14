@@ -3,7 +3,10 @@ import { Vec2 } from "./math";
 
 export class Ball {
     energy: number = 0;
-    position; drawPosition; velocity; mass; elasticity; colour; radius;
+    elasticity: number = 1;
+    position; drawPosition; velocity; mass; colour; radius;
+
+    density: number = 0.01;
 
     // radius and velocity have to be passed
     constructor(
@@ -27,8 +30,8 @@ export class Ball {
             this.elasticity = 0;
         }
 
-        this.mass = radius ** 2 * Math.PI;
-        this.calculateEnergy();
+        this.mass = (Math.PI * this.radius ** 2) * this.density;
+        this.energy = (this.mass/2) * this.velocity.magnitude**2;
     }
 
     // takes a number to add energy to the ball
