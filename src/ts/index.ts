@@ -49,6 +49,7 @@ setInterval(() => {
 canvas.addEventListener('mousedown', (e) => {
     const butt = e.button;
     if(butt === 2) mouseDown = true;
+    // if(butt === 1) alert("Middle!");
     if(butt === 0) spawnBall();
 });
 
@@ -127,7 +128,6 @@ function physicsUpdate() {
         // avoids balls sinking into the floor
         const gravity = yWallsCollide ? 0 : 0.1;
         ball.applyForce(new Vec2(0, gravity));
-
 
     }
 }
