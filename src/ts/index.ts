@@ -2,24 +2,41 @@
 import { Vec2 } from "./modules/math";
 import { Ball } from "./modules/ball";
 
-const canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
-const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+//----------------------------------------[VARIABLES]----------------------------------------
 
-const canvasDims = {
-    width: canvas.width,
-    height: canvas.height
-}
+const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+const balls: Ball[] = [];
+const physicsInterval = 10;
+const tweenInterval = 15;
+const bounceNoise = 1; //degrees
 
 const ballParams = {
     radius: 5,
     elasticity: 0.75
 }
 
-const balls: Ball[] = [];
-
+let centreBall: Vec2 = new Vec2();
 let mousePos: Vec2 = new Vec2(1, 1);
-const physicsInterval = 10;
-const tweenInterval = 15;
+let mouseDown: boolean = false;
+
+//----------------------------------------[INITIALIZATIONS]----------------------------------------
+
+resize();
+recenter();
+animate();
+setInterval(physicsUpdate, physicsInterval);
+setInterval(() => {
+    if (mouseDown) {
+        spawnBall();
+    }
+}, 50);
+
+// setInterval(tween, tweenInterval);
+
+//----------------------------------------[LISTENERS]----------------------------------------
+
+window.addEventListener('resize', resize);
 
 document.body.addEventListener('contextmenu', e => {
     e.preventDefault();
@@ -29,22 +46,6 @@ document.body.addEventListener('contextmenu', e => {
 canvas.addEventListener('mousemove', (e) => {
     mousePos = new Vec2(e.offsetX, e.offsetY);
 });
-
-let mouseDown: boolean = false;
-
-// check the mouse pos with setinterval`
-function spawnBall() {
-    const spawnPos = new Vec2(canvasDims.width / 2, canvasDims.height / 2);
-    const vel = mousePos.subtract(spawnPos).multiply(0.03);
-    balls.push(new Ball(canvasDims.width / 2, canvasDims.height / 2, ballParams.radius, vel.x, vel.y, ballParams.elasticity, `hsl(${Math.random()*360}, 100%, 50%)`));
-}
-
-setInterval(() => {
-    if (mouseDown) {
-        spawnBall();
-    }
-}, 50);
-
 
 canvas.addEventListener('mousedown', (e) => {
     const butt = e.button;
@@ -63,6 +64,28 @@ canvas.addEventListener('mouseout', (e) => {
     if(butt === 2) mouseDown = false;
 });
 
+//----------------------------------------[FUNCTIONS]----------------------------------------
+
+function recenter() {
+    centreBall.x = canvas.width / 2;
+    centreBall.y = canvas.height / 2;
+}
+
+function resize() {
+    const { innerWidth, innerHeight } = window;
+    canvas.width = innerWidth * 0.9;
+    canvas.height = innerHeight * 0.9;
+
+    recenter();
+}
+
+// check the mouse pos with setinterval
+function spawnBall() {
+    const spawnPos = centreBall;
+    const vel = mousePos.subtract(spawnPos).multiply(0.03);
+    balls.push(new Ball(spawnPos.x, spawnPos.y, ballParams.radius, vel.x, vel.y, ballParams.elasticity, `hsl(${Math.random()*360}, 100%, 50%)`));
+}
+
 function drawBall(ctx: CanvasRenderingContext2D, ball: Ball): void {
     ctx.beginPath();
     ctx.arc(ball.drawPosition.x, ball.drawPosition.y, ball.radius, 0, Math.PI * 2);
@@ -75,9 +98,10 @@ function animate() {
     requestAnimationFrame(animate);
 
     // clear the screen to draw again every frame
-    ctx.clearRect(0, 0, canvasDims.width, canvasDims.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
     // draw a marker centre screen to canvasDims
-    drawBall(ctx, new Ball(canvasDims.width / 2, canvasDims.height / 2, ballParams.radius));
+    drawBall(ctx, new Ball(centreBall.x, centreBall.y, ballParams.radius));
 
     // draw the ball
     for (const ball of balls) {
@@ -89,6 +113,8 @@ function animate() {
 //     ball.drawPos = ball.drawPos.add(ball.velocity.multiply(tweenInterval / physicsInterval));
 // }
 
+const random = { bounce: 1, energy_loss: 0.9 };
+
 function physicsUpdate() {
     for (let i = 0; i < balls.length; i++) {
         const ball = balls[i];
@@ -96,19 +122,21 @@ function physicsUpdate() {
         ball.position = ball.position.add(ball.velocity);
         ball.drawPosition = ball.position;
 
-        // if the ball goes of canvas remove from array
-        if (ball.position.x > canvasDims.width || ball.position.x < 0 || ball.position.y > canvasDims.height || ball.position.y < 0) {
+        // if the ball goes off canvas remove from array
+        if (ball.position.x > canvas.width || ball.position.x < 0 || ball.position.y > canvas.height || ball.position.y < 0) {
             // balls.splice(i, 1);
         }
 
         // if the ball hits wall bounce
-        const xWallsCollide = (ball.position.x > canvasDims.width - ball.radius || ball.position.x < ball.radius);
-        const yWallsCollide = (ball.position.y > canvasDims.height - ball.radius || ball.position.y < ball.radius);
+        const xWallsCollide = (ball.position.x > canvas.width - ball.radius || ball.position.x < ball.radius);
+        const yWallsCollide = (ball.position.y > canvas.height - ball.radius || ball.position.y < ball.radius);
 
         if (xWallsCollide) {
             if (!ball.xColliding) { // Prevent ball wall collision event from firing multiple times IN A ROW (back to back).
                 ball.xColliding = true;
                 ball.velocity.x = -ball.velocity.x;
+                // console.log(ball.velocity.x);
+                // ball.velocity.x *= random.bounce * Math.random();
                 ball.removeEnergy(ball.energy * (1 - ball.elasticity));
             }
         } else {
@@ -119,10 +147,19 @@ function physicsUpdate() {
             if (!ball.yColliding) {
                 ball.yColliding = true;
                 ball.velocity.y = -ball.velocity.y;
+                // ball.velocity.y *= random.bounce * Math.random();
                 ball.removeEnergy(ball.energy * (1 - ball.elasticity));
             }
         } else {
             ball.yColliding = false;
+        }
+
+        if (xWallsCollide || yWallsCollide) {
+            const mag = ball.velocity.magnitude; //Convsere ball's velocity
+            let dir = ball.velocity.toAngle(); //Angle of ball in radians
+            const bounceNoiseRads = bounceNoise * Math.PI / 180; //Convert bounce noise from degrees to radians
+            dir += randFloat(-bounceNoiseRads, bounceNoiseRads);
+            ball.velocity = Vec2.fromAngle(dir).multiply(mag); // convert direction (normalised vector) and multiply by magnitude to get original vector
         }
 
         // avoids balls sinking into the floor
@@ -132,7 +169,6 @@ function physicsUpdate() {
     }
 }
 
-setInterval(physicsUpdate, physicsInterval);
-// setInterval(tween, tweenInterval);
-
-animate();
+function randFloat(min: number, max: number) {
+    return Math.random() * (max - min) + min;
+}

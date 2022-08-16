@@ -56,4 +56,13 @@ export class Vec2 {
     direction(v: Vec2): Vec2 {
         return v.subtract(this).normalise();
     }
+
+    // convert cartesian coordinates to radian angle
+    toAngle(): number {
+        return Math.atan2(this.y, this.x);
+    }
+
+    static fromAngle(radians: number): Vec2 {
+        return new Vec2(Math.cos(radians), Math.sin(radians));
+    }
 }
