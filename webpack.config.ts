@@ -1,9 +1,9 @@
 
 import path from 'path';
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin'; // creates separate css file
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 
-const FixStyleOnlyEntriesPlugin = require('webpack-fix-style-only-entries');
+const FixStyleOnlyEntriesPlugin = require('webpack-fix-style-only-entries'); // deletes extra js css file
 
 module.exports = {
     mode: 'development',
