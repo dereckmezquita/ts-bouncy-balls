@@ -9,7 +9,8 @@ const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 const balls: Ball[] = [];
 const physicsInterval = 10;
 const tweenInterval = 15;
-const bounceNoise = 1; //degrees
+const bounceNoise = 5; // degrees
+const energyNoise = 0.5; // float
 
 const ballParams = {
     radius: 5,
@@ -107,13 +108,13 @@ function animate() {
     for (const ball of balls) {
         drawBall(ctx, ball);
     }
+
+    console.log(balls.length);
 }
 
 // function tween() {
 //     ball.drawPos = ball.drawPos.add(ball.velocity.multiply(tweenInterval / physicsInterval));
 // }
-
-const random = { bounce: 1, energy_loss: 0.9 };
 
 function physicsUpdate() {
     for (let i = 0; i < balls.length; i++) {
@@ -135,9 +136,7 @@ function physicsUpdate() {
             if (!ball.xColliding) { // Prevent ball wall collision event from firing multiple times IN A ROW (back to back).
                 ball.xColliding = true;
                 ball.velocity.x = -ball.velocity.x;
-                // console.log(ball.velocity.x);
-                // ball.velocity.x *= random.bounce * Math.random();
-                ball.removeEnergy(ball.energy * (1 - ball.elasticity));
+                ball.removeEnergy((ball.energy * (1 - ball.elasticity)) * randFloat(1, energyNoise));
             }
         } else {
             ball.xColliding = false;
@@ -147,8 +146,7 @@ function physicsUpdate() {
             if (!ball.yColliding) {
                 ball.yColliding = true;
                 ball.velocity.y = -ball.velocity.y;
-                // ball.velocity.y *= random.bounce * Math.random();
-                ball.removeEnergy(ball.energy * (1 - ball.elasticity));
+                ball.removeEnergy((ball.energy * (1 - ball.elasticity)) * randFloat(1, energyNoise));
             }
         } else {
             ball.yColliding = false;

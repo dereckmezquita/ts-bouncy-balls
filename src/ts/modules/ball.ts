@@ -84,4 +84,6 @@ export class Ball {
     setDirection(direction: Vec2): void {
         this.velocity = direction.multiply(this.velocity.magnitude);
     }
+
+    // static checkBallCollision(ball2: Ball)
 }
