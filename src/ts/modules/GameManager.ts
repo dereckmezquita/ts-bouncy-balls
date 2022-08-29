@@ -35,7 +35,7 @@ export class GameManager {
         // ------------------------------
         this.resize();
         this.recenter();
-        window.addEventListener('resize', this.resize);
+        window.addEventListener('resize', this.resize.bind(this));
 
         // update current mouse position
         this.canvas.addEventListener('mousemove', (e) => {
