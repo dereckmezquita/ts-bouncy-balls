@@ -1,6 +1,6 @@
 
-import { Vec2 } from "./modules/math";
-import { Ball } from "./modules/ball";
+import { Vec2 } from "./modules/Vec2";
+import { Ball } from "./modules/Ball";
 
 //----------------------------------------[VARIABLES]----------------------------------------
 
@@ -26,6 +26,7 @@ let mouseDown: boolean = false;
 resize();
 recenter();
 animate();
+
 setInterval(physicsUpdate, physicsInterval);
 setInterval(() => {
     if (mouseDown) {
@@ -109,11 +110,13 @@ function animate() {
         drawBall(ctx, ball);
     }
 
-    console.log(balls.length);
+    // console.log(balls.length);
 }
 
 // function tween() {
-//     ball.drawPos = ball.drawPos.add(ball.velocity.multiply(tweenInterval / physicsInterval));
+//     for (const ball of balls) {
+//         ball.drawPosition = ball.drawPosition.add(ball.velocity.multiply(tweenInterval / physicsInterval));
+//     }
 // }
 
 function physicsUpdate() {

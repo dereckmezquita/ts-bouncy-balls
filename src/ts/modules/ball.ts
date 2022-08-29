@@ -1,5 +1,5 @@
 
-import { Vec2 } from "./math";
+import { Vec2 } from "./Vec2";
 
 export class Ball {
     energy: number = 0;
