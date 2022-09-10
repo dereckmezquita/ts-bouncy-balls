@@ -7,6 +7,19 @@
     <title>Bouncy ball physics</title>
 </head>
 <body>
+    <div class="stats">
+        <p class="num-balls"></p>
+        <div class="sliders">
+            <div class="energy-slider">
+                <label class="energy-slider-label" for="energy"></label>
+                <input class="energy-slider-value" type="range" name="energy" min="0" max="100" value="0">
+            </div>
+            <div class="add-n-balls-slider">
+                <label class="add-n-balls-slider-label" for="add-n-balls"></label>
+                <input class="add-n-balls-slider-value" type="range" name="add-n-balls" min="1" max="100" value="1">
+            </div>
+        </div>
+    </div>
     <div class="main">
         <canvas id="canvas"></canvas>
     </div>

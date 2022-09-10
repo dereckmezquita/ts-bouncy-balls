@@ -16,8 +16,13 @@ export class GameManager {
     ballParams = {
         radius: 5,
         elasticity: 0.75,
-        bounceNoise: 5, // degrees
-        energyNoise: 0.5 // float
+        angleNoise: 5, // degrees
+        energyNoise: 0.3 // float
+    }
+
+    ballSliders = {
+        addEnergySlider: 0,
+        addNumBalls: 1
     }
 
     balls: Ball[] = [];
@@ -42,9 +47,13 @@ export class GameManager {
             this.mousePos = new Vec2(e.offsetX, e.offsetY);
         });
 
+        // ------------------------------
+        // right click spawn balls
         setInterval(() => {
             if (this.mouseDown) {
-                this.spawnBall(this.centreBall);
+                for (let i = 0; i < this.ballSliders.addNumBalls; i++) {
+                    this.spawnBall(this.centreBall);
+                }
             }
         }, 50);
 
@@ -52,7 +61,12 @@ export class GameManager {
         this.canvas.addEventListener('mousedown', (e) => {
             const button = e.button;
             if (button === 2) this.mouseDown = true;
-            if (button == 0) this.spawnBall(this.centreBall);
+            // for this.ballSliders.addNumBalls.length
+            if (button === 0) {
+                for (let i = 0; i < this.ballSliders.addNumBalls; i++) {
+                    this.spawnBall(this.centreBall);
+                }
+            }
         });
 
         this.canvas.addEventListener('mouseup', (e) => {
@@ -69,6 +83,44 @@ export class GameManager {
         // ------------------------------
         this.animate();
         setInterval(this.physicsUpdate.bind(this), this.physicsInterval);
+
+        // ------------------------------
+        // print to html
+        const numBalls = document.querySelector('.num-balls') as HTMLDivElement;
+        numBalls.innerHTML = `Balls: ${this.balls.length}; Average speed: ${this.getAverageSpeed}`;
+        // --------------
+        const addEnergySlider_label = document.querySelector('.energy-slider-label') as HTMLInputElement;
+        addEnergySlider_label.innerHTML = `Add energy (0):`
+        // --------------
+        const addNumBalls = document.querySelector('.add-n-balls-slider-label') as HTMLInputElement;
+        addNumBalls.innerHTML = `Add/delete n balls (1):`
+
+        // print to html every n
+        setInterval(() => {
+            // number of balls
+            numBalls.innerHTML = `Balls: ${this.balls.length}; Average speed: ${this.getAverageSpeed}`;
+
+            // add energy to all balls
+            addEnergySlider_label.innerHTML = `Add energy (${this.ballSliders.addEnergySlider}):`
+            const addEnergySlider_value = document.querySelector('.energy-slider-value') as HTMLInputElement;
+            this.ballSliders.addEnergySlider = parseInt(addEnergySlider_value.value);
+
+            // number of balls per click
+            addNumBalls.innerHTML = `Add/delete n balls (${this.ballSliders.addNumBalls}):`
+            const addNumBalls_value = document.querySelector('.add-n-balls-slider-value') as HTMLInputElement;
+            this.ballSliders.addNumBalls = parseInt(addNumBalls_value.value);
+        }, 250);
+    }
+
+    get getAverageSpeed() {
+        if(this.balls.length == 0) return 0;
+
+        let totalSpeed = 0;
+        for (const ball of this.balls) {
+            totalSpeed += ball.velocity.magnitude;
+        }
+
+        return (totalSpeed / this.balls.length).toFixed(3);
     }
 
     recenter(): void {
@@ -88,7 +140,7 @@ export class GameManager {
     spawnBall(fromVec: Vec2): void {
         const mousePos = this.mousePos;
 
-        const vel = mousePos.subtract(fromVec).multiply(0.03);
+        const vel = mousePos.subtract(fromVec).multiply(0.075);
         this.balls.push(new Ball(
             fromVec.x,
             fromVec.y,
@@ -156,8 +208,8 @@ export class GameManager {
             if (xWallsCollide || yWallsCollide) {
                 const mag = ball.velocity.magnitude; //Convsere ball's velocity
                 let dir = ball.velocity.toAngle(); //Angle of ball in radians
-                const bounceNoiseRads = this.ballParams.bounceNoise * Math.PI / 180; //Convert bounce noise from degrees to radians
-                dir += randFloat(-bounceNoiseRads, bounceNoiseRads);
+                const angleNoiseRads = this.ballParams.angleNoise * Math.PI / 180; //Convert bounce noise from degrees to radians
+                dir += randFloat(-angleNoiseRads, angleNoiseRads);
                 ball.velocity = Vec2.fromAngle(dir).multiply(mag); // convert direction (normalised vector) and multiply by magnitude to get original vector
             }
     
@@ -165,6 +217,10 @@ export class GameManager {
             const gravity = yWallsCollide ? 0 : 0.1;
             ball.applyForce(new Vec2(0, gravity));
     
+            // add this.addEnergySlider to the balls energy
+            if (this.ballSliders.addEnergySlider > 0) {
+                ball.addEnergy(this.ballSliders.addEnergySlider / 50);
+            }
         }
     }
 }
