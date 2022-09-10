@@ -1,5 +1,5 @@
 
-import { Vec2 } from "./math";
+import { Vec2 } from "./Vec2";
 
 export class Ball {
     energy: number = 0;
@@ -35,7 +35,7 @@ export class Ball {
         }
 
         this.mass = (Math.PI * this.radius ** 2) * this.density;
-        this.energy = (this.mass/2) * this.velocity.magnitude**2;
+        this.energy = (this.mass / 2) * this.velocity.magnitude ** 2;
     }
 
     // takes a number to add energy to the ball
@@ -86,4 +86,13 @@ export class Ball {
     }
 
     // static checkBallCollision(ball2: Ball)
+
+    // ------------------------------
+    // helper methods
+    static draw(ctx: CanvasRenderingContext2D, ball: Ball): void {
+        ctx.beginPath();
+        ctx.arc(ball.drawPosition.x, ball.drawPosition.y, ball.radius, 0, Math.PI * 2);
+        ctx.fillStyle = ball.colour;
+        ctx.fill();
+    }
 }
