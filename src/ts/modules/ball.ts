@@ -17,7 +17,7 @@ export class Ball {
         radius: number = 5,
         vX: number = 0,
         vY: number = 0,
-        elasticity: number = 1,
+        elasticity: number = 0.75,
         colour: string = '#ff0000'
     ) {
         this.position = new Vec2(x, y);
@@ -85,8 +85,6 @@ export class Ball {
         this.velocity = direction.multiply(this.velocity.magnitude);
     }
 
-    // static checkBallCollision(ball2: Ball)
-
     // ------------------------------
     // helper methods
     static draw(ctx: CanvasRenderingContext2D, ball: Ball): void {
@@ -94,5 +92,13 @@ export class Ball {
         ctx.arc(ball.drawPosition.x, ball.drawPosition.y, ball.radius, 0, Math.PI * 2);
         ctx.fillStyle = ball.colour;
         ctx.fill();
+    }
+
+    // ball ball collision
+    colliding(ball2: Ball): boolean {
+        const distance = this.position.subtract(ball2.position).magnitude;
+
+        if (distance <= this.radius + ball2.radius) return true;
+        return false;
     }
 }

@@ -327,9 +327,7 @@ export class GameManager {
             for (let j = 0; j < this.balls.length; j++) {
                 const ball2 = this.balls[j];
                 if (ball != ball2) {
-                    const distance = ball.position.distance(ball2.position);
-                    const radiusSum = ball.radius + ball2.radius;
-                    if (distance < radiusSum) {
+                    if (ball.colliding(ball2)) {
                         // if balls collide then bounce
                         const normal = ball.position.subtract(ball2.position).normalise();
                         const tangent = new Vec2(-normal.y, normal.x);
