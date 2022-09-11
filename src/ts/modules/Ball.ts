@@ -87,11 +87,18 @@ export class Ball {
 
     // ------------------------------
     // helper methods
-    static draw(ctx: CanvasRenderingContext2D, ball: Ball): void {
-        ctx.beginPath();
-        ctx.arc(ball.drawPosition.x, ball.drawPosition.y, ball.radius, 0, Math.PI * 2);
-        ctx.fillStyle = ball.colour;
-        ctx.fill();
+    static draw(ctx: CanvasRenderingContext2D, ball: Ball, sprite_path?: string): void {
+        if (sprite_path) {
+            const sprite_image = new Image();
+            sprite_image.src = sprite_path;
+
+            ctx.drawImage(sprite_image, ball.drawPosition.x - ball.radius, ball.drawPosition.y - ball.radius, ball.radius * 2, ball.radius * 2);
+        } else {
+            ctx.beginPath();
+            ctx.arc(ball.drawPosition.x, ball.drawPosition.y, ball.radius, 0, Math.PI * 2);
+            ctx.fillStyle = ball.colour;
+            ctx.fill();
+        }
     }
 
     // ball ball collision

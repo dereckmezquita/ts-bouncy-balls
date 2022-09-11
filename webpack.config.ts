@@ -2,6 +2,7 @@
 import path from 'path';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'; // creates separate css file
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import CopyPlugin from 'copy-webpack-plugin';
 
 const FixStyleOnlyEntriesPlugin = require('webpack-fix-style-only-entries'); // deletes extra js css file
 
@@ -44,6 +45,16 @@ module.exports = {
             template: path.resolve(__dirname, 'src/index.html'),
             filename: 'index.html',
             chunks: ['index', 'styles']
+        }),
+        new CopyPlugin({
+            patterns: [
+                {
+                    context: './src/',
+                    from: "./**/*\.(png)",
+                    to: "./",
+                    noErrorOnMissing: true
+                }
+            ]
         })
     ]
 }
