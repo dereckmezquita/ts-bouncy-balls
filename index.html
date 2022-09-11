@@ -5,20 +5,39 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bouncy ball physics</title>
-<script defer src="js/ce32ee3d7215681d0268.js"></script><link href="css/a010763c8fcf7a8e7765.css" rel="stylesheet"></head>
+<script defer src="js/f8a2c322b833d4e240d7.js"></script><link href="css/7a2e91fade3e847f06f8.css" rel="stylesheet"></head>
 <body>
     <div class="stats">
         <p class="num-balls"></p>
-        <div class="sliders">
-            <div class="energy-slider">
+        <p>Ball settings:</p>
+        <ul class="ball-settings">
+            <li class="ball-radius">
+                <label class="ball-radius-label" for="ball-radius"></label>
+                <input class="ball-radius-value" type="range" id="ball-radius" min="5" max="50" value="5" step="1">
+            </li>
+            <li class="ball-elasticity">
+                <label class="ball-elasticity-label" for="ball-elasticity"></label>
+                <input class="ball-elasticity-value" type="range" id="ball-elasticity" min="0" max="0.999" value="0.75" step="0.01">
+            </li>
+        </ul>
+        <p>Universe settings:</p>
+        <ul class="universe-settings">
+            <li class="energy-slider">
                 <label class="energy-slider-label" for="energy"></label>
                 <input class="energy-slider-value" type="range" name="energy" min="0" max="100" value="0">
-            </div>
-            <div class="add-n-balls-slider">
+            </li>
+            <li class="add-n-balls-slider">
                 <label class="add-n-balls-slider-label" for="add-n-balls"></label>
                 <input class="add-n-balls-slider-value" type="range" name="add-n-balls" min="1" max="100" value="1">
-            </div>
-        </div>
+            </li>
+            <li class="gravity-time-slider">
+                <label class="gravity-slider-label" for="gravity"></label>
+                <input class="gravity-slider-value" type="number" name="gravity" min="0" max="1" value="0.1" step="0.001">
+                <!-- time -->
+                <label class="time-slider-label" for="time"></label>
+                <input class="time-slider-value" type="number" name="time" min="0" max="5000" value="10" step="10">
+            </li>
+        </ul>
     </div>
     <div class="main">
         <canvas id="canvas"></canvas>
