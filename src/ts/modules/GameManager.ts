@@ -10,8 +10,15 @@ export class GameManager {
     physicsInterval: number = 10;
 
     mousePos: Vec2 = new Vec2(1, 1);
-    centreBall: Vec2 = new Vec2();
-    mouseDown: boolean = false;
+    centreBall: Vec2 = new Vec2(0, 0);
+
+    mouseDown = {
+        left: false,
+        right: false,
+        middle: false
+    }
+
+    gravity: number = 0.1;
 
     ballParams = {
         radius: 5,
@@ -22,7 +29,7 @@ export class GameManager {
 
     ballSliders = {
         addEnergySlider: 0,
-        addNumBalls: 1
+        addRemoveNumBalls: 1
     }
 
     balls: Ball[] = [];
@@ -50,66 +57,60 @@ export class GameManager {
         // ------------------------------
         // right click spawn balls
         setInterval(() => {
-            if (this.mouseDown) {
-                for (let i = 0; i < this.ballSliders.addNumBalls; i++) {
+            if (this.mouseDown.left) {
+                for (let i = 0; i < this.ballSliders.addRemoveNumBalls; i++) {
                     this.spawnBall(this.centreBall);
                 }
             }
         }, 50);
 
         // ------------------------------
+        // mouse click spawn balls
         this.canvas.addEventListener('mousedown', (e) => {
             const button = e.button;
-            if (button === 2) this.mouseDown = true;
-            // for this.ballSliders.addNumBalls.length
+            if (button === 2) this.mouseDown.left = true;
+            if (button === 1) this.mouseDown.middle = true;
+            // for this.ballSliders.addRemoveNumBalls.length
             if (button === 0) {
-                for (let i = 0; i < this.ballSliders.addNumBalls; i++) {
+                for (let i = 0; i < this.ballSliders.addRemoveNumBalls; i++) {
                     this.spawnBall(this.centreBall);
                 }
+            }
+
+            // delete n balls if middle button
+            if (button === 1) {
+                this.balls.splice(0, this.ballSliders.addRemoveNumBalls);
             }
         });
 
         this.canvas.addEventListener('mouseup', (e) => {
             const button = e.button;
-            if (button === 2) this.mouseDown = false;
+            if (button === 2) this.mouseDown.left = false;
+            if (button === 1) this.mouseDown.middle = false;
         });
 
         // if mouse leaves canvas area
         this.canvas.addEventListener('mouseout', (e) => {
             const button = e.button;
-            if (button === 2) this.mouseDown = false;
+            if (button === 2) this.mouseDown.left = false;
+            if (button === 1) this.mouseDown.middle = false;
         })
 
         // ------------------------------
         this.animate();
-        setInterval(this.physicsUpdate.bind(this), this.physicsInterval);
+
+        const dynamicTimeout = () => {
+            setTimeout(() => {
+                this.physicsUpdate();
+                dynamicTimeout();
+            }, this.physicsInterval);
+        }
+
+        dynamicTimeout();
 
         // ------------------------------
-        // print to html
-        const numBalls = document.querySelector('.num-balls') as HTMLDivElement;
-        numBalls.innerHTML = `Balls: ${this.balls.length}; Average speed: ${this.getAverageSpeed}`;
-        // --------------
-        const addEnergySlider_label = document.querySelector('.energy-slider-label') as HTMLInputElement;
-        addEnergySlider_label.innerHTML = `Add energy (0):`
-        // --------------
-        const addNumBalls = document.querySelector('.add-n-balls-slider-label') as HTMLInputElement;
-        addNumBalls.innerHTML = `Add/delete n balls (1):`
-
         // print to html every n
-        setInterval(() => {
-            // number of balls
-            numBalls.innerHTML = `Balls: ${this.balls.length}; Average speed: ${this.getAverageSpeed}`;
-
-            // add energy to all balls
-            addEnergySlider_label.innerHTML = `Add energy (${this.ballSliders.addEnergySlider}):`
-            const addEnergySlider_value = document.querySelector('.energy-slider-value') as HTMLInputElement;
-            this.ballSliders.addEnergySlider = parseInt(addEnergySlider_value.value);
-
-            // number of balls per click
-            addNumBalls.innerHTML = `Add/delete n balls (${this.ballSliders.addNumBalls}):`
-            const addNumBalls_value = document.querySelector('.add-n-balls-slider-value') as HTMLInputElement;
-            this.ballSliders.addNumBalls = parseInt(addNumBalls_value.value);
-        }, 250);
+        this.updateUserSettings();
     }
 
     get getAverageSpeed() {
@@ -123,6 +124,17 @@ export class GameManager {
         return (totalSpeed / this.balls.length).toFixed(3);
     }
 
+    get getAverageEnergy() {
+        if(this.balls.length == 0) return 0;
+
+        let totalEnergy = 0;
+        for (const ball of this.balls) {
+            totalEnergy += ball.energy;
+        }
+
+        return (totalEnergy / this.balls.length).toFixed(3);
+    }
+
     recenter(): void {
         this.centreBall.x = this.canvas.width / 2;
         this.centreBall.y = this.canvas.height / 2;
@@ -131,25 +143,99 @@ export class GameManager {
     resize(): void {
         const { innerWidth, innerHeight } = window;
         this.canvas.width = innerWidth * 0.9;
-        this.canvas.height = innerHeight * 0.9;
+        this.canvas.height = innerHeight * 0.8;
     
         this.recenter();
     }
 
     // check the mouse pos with setinterval
-    spawnBall(fromVec: Vec2): void {
+    spawnBall(fromVec: Vec2, randOffset: boolean = true): void {
         const mousePos = this.mousePos;
+
+        // to avoid overlapping balls on spawn slight offset
+        const offsets = {
+            x: randOffset ? randFloat(0, 0.5) : 0,
+            y: randOffset ? randFloat(0, 0.5) : 0
+        }
 
         const vel = mousePos.subtract(fromVec).multiply(0.075);
         this.balls.push(new Ball(
-            fromVec.x,
-            fromVec.y,
+            fromVec.x + offsets.x,
+            fromVec.y + offsets.y,
             this.ballParams.radius,
             vel.x,
             vel.y,
             this.ballParams.elasticity,
             `hsl(${Math.random() * 360}, 100%, 50%)`
         ));
+    }
+
+    // ------------------------------
+    updateUserSettings(): void {
+        // ------------------------------
+        // ball stats
+        const numBalls = document.querySelector('.num-balls') as HTMLDivElement;
+        numBalls.innerHTML = `Balls: ${this.balls.length}; Average speed: ${this.getAverageSpeed}; Average energy: ${this.getAverageEnergy}`;
+
+        // ------------------------------
+        // ball settings
+        const ballRadius_label = document.querySelector('.ball-radius-label') as HTMLInputElement;
+        ballRadius_label.innerHTML = `Ball radius (${this.ballParams.radius})`;
+        // ball elasticity
+        const ballElasticity_label = document.querySelector('.ball-elasticity-label') as HTMLInputElement;
+        ballElasticity_label.innerHTML = `Ball elasticity (${this.ballParams.elasticity})`;
+
+        // ------------------------------
+        // universe settings
+        const addEnergySlider_label = document.querySelector('.energy-slider-label') as HTMLInputElement;
+        addEnergySlider_label.innerHTML = `Add energy (0):`
+        // --------------
+        const addRemoveNumBalls = document.querySelector('.add-n-balls-slider-label') as HTMLInputElement;
+        addRemoveNumBalls.innerHTML = `Add/delete n balls (1):`
+        // --------------
+        const gravitySlider_label = document.querySelector('.gravity-slider-label') as HTMLInputElement;
+        gravitySlider_label.innerHTML = `Gravity:`
+        // --------------
+        // time
+        const timeSlider_label = document.querySelector('.time-slider-label') as HTMLInputElement;
+        timeSlider_label.innerHTML = `Time ms:`
+
+        setInterval(() => {
+            // ball stats
+            numBalls.innerHTML = `Balls: ${this.balls.length}; Average speed: ${this.getAverageSpeed}; Average energy: ${this.getAverageEnergy}`;
+
+            // ------------------------------
+            // ball radius
+            ballRadius_label.innerHTML = `Ball radius (${this.ballParams.radius})`;
+            const ballRadius_value = document.querySelector('.ball-radius-value') as HTMLInputElement;
+            this.ballParams.radius = parseInt(ballRadius_value.value);
+            // ball elasticity
+            ballElasticity_label.innerHTML = `Ball elasticity (${this.ballParams.elasticity})`;
+            const ballElasticity_value = document.querySelector('.ball-elasticity-value') as HTMLInputElement;
+            this.ballParams.elasticity = parseFloat(ballElasticity_value.value);
+
+            // ------------------------------
+            // universe settings
+            // add energy to all balls
+            addEnergySlider_label.innerHTML = `Add energy (${this.ballSliders.addEnergySlider}):`
+            const addEnergySlider_value = document.querySelector('.energy-slider-value') as HTMLInputElement;
+            this.ballSliders.addEnergySlider = parseInt(addEnergySlider_value.value);
+
+            // number of balls per click
+            addRemoveNumBalls.innerHTML = `Add/delete n balls (${this.ballSliders.addRemoveNumBalls}):`
+            const addRemoveNumBalls_value = document.querySelector('.add-n-balls-slider-value') as HTMLInputElement;
+            this.ballSliders.addRemoveNumBalls = parseInt(addRemoveNumBalls_value.value);
+
+            // gravity
+            gravitySlider_label.innerHTML = `Gravity:`
+            const gravitySlider_value = document.querySelector('.gravity-slider-value') as HTMLInputElement;
+            this.gravity = parseFloat(gravitySlider_value.value);
+
+            // time
+            timeSlider_label.innerHTML = `Time ms:`
+            const timeSlider_value = document.querySelector('.time-slider-value') as HTMLInputElement;
+            this.physicsInterval = parseInt(timeSlider_value.value);
+        }, 250);
     }
 
     // ------------------------------
@@ -161,6 +247,13 @@ export class GameManager {
 
         // draw a marker centre screen to canvasDims
         Ball.draw(this.ctx, new Ball(this.centreBall.x, this.centreBall.y, this.ballParams.radius));
+
+        // draw a red ring 2 times bigger around centreBall
+        this.ctx.beginPath();
+        this.ctx.lineWidth = 2;
+        this.ctx.arc(this.centreBall.x, this.centreBall.y, this.ballParams.radius * 2, 0, Math.PI * 2, false);
+        this.ctx.strokeStyle = 'red';
+        this.ctx.stroke();
 
         // draw the ball
         for (const ball of this.balls) {
@@ -214,11 +307,17 @@ export class GameManager {
             }
     
             // avoids balls sinking into the floor
-            const gravity = yWallsCollide ? 0 : 0.1;
-            ball.applyForce(new Vec2(0, gravity));
+            const gravity_value = yWallsCollide ? 0 : this.gravity;
+            ball.applyForce(new Vec2(0, gravity_value));
     
+            // ball energy modifications
             // add this.addEnergySlider to the balls energy
-            if (this.ballSliders.addEnergySlider > 0) {
+            if (this.ballSliders.addEnergySlider != 0) {
+                // if ball energy is 0 then apply a random velocity
+                if (ball.energy == 0) {
+                    ball.velocity = Vec2.fromAngle(randFloat(0, Math.PI * 2)).multiply(randFloat(0, 0.5));
+                }
+
                 ball.addEnergy(this.ballSliders.addEnergySlider / 50);
             }
         }
