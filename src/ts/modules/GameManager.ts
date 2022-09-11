@@ -327,10 +327,11 @@ export class GameManager {
             for (let j = 0; j < this.balls.length; j++) {
                 const ball2 = this.balls[j];
                 if (ball != ball2) {
-                    if (ball.colliding(ball2)) {
+                    if (ball.isColliding(ball2)) {
                         // if balls collide then bounce
                         const normal = ball.position.subtract(ball2.position).normalise();
                         const tangent = new Vec2(-normal.y, normal.x);
+
                         const dpTan1 = ball.velocity.dot(tangent);
                         const dpTan2 = ball2.velocity.dot(tangent);
                         const dpNorm1 = ball.velocity.dot(normal);
