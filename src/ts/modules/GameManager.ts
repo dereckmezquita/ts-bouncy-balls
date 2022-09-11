@@ -310,6 +310,7 @@ export class GameManager {
             const gravity_value = yWallsCollide ? 0 : this.gravity;
             ball.applyForce(new Vec2(0, gravity_value));
     
+            // ------------------------------
             // ball energy modifications
             // add this.addEnergySlider to the balls energy
             if (this.ballSliders.addEnergySlider != 0) {
@@ -319,6 +320,29 @@ export class GameManager {
                 }
 
                 ball.addEnergy(this.ballSliders.addEnergySlider / 50);
+            }
+
+            // ------------------------------
+            // ball collisions
+            for (let j = 0; j < this.balls.length; j++) {
+                const ball2 = this.balls[j];
+                if (ball != ball2) {
+                    const distance = ball.position.distance(ball2.position);
+                    const radiusSum = ball.radius + ball2.radius;
+                    if (distance < radiusSum) {
+                        // if balls collide then bounce
+                        const normal = ball.position.subtract(ball2.position).normalise();
+                        const tangent = new Vec2(-normal.y, normal.x);
+                        const dpTan1 = ball.velocity.dot(tangent);
+                        const dpTan2 = ball2.velocity.dot(tangent);
+                        const dpNorm1 = ball.velocity.dot(normal);
+                        const dpNorm2 = ball2.velocity.dot(normal);
+                        const m1 = (dpNorm1 * (ball.mass - ball2.mass) + 2 * ball2.mass * dpNorm2) / (ball.mass + ball2.mass);
+                        const m2 = (dpNorm2 * (ball2.mass - ball.mass) + 2 * ball.mass * dpNorm1) / (ball.mass + ball2.mass);
+                        ball.velocity = tangent.multiply(dpTan1).add(normal.multiply(m1));
+                        ball2.velocity = tangent.multiply(dpTan2).add(normal.multiply(m2));
+                    }
+                }
             }
         }
     }
