@@ -102,10 +102,27 @@ export class Ball {
     }
 
     // ball ball collision
-    isColliding(ball2: Ball): boolean {
-        const distance = this.position.subtract(ball2.position).magnitude;
+    static isColliding(ball: Ball, ball2: Ball): boolean {
+        const distance = ball.position.subtract(ball2.position).magnitude;
 
-        if (distance <= this.radius + ball2.radius) return true;
+        if (distance <= ball.radius + ball2.radius) return true;
         return false;
+    }
+
+    static calculateCollision(ball: Ball, ball2: Ball): void {
+        if (Ball.isColliding(ball, ball2)) {
+            // if balls collide then bounce
+            const normal = ball.position.subtract(ball2.position).normalise();
+            const tangent = new Vec2(-normal.y, normal.x);
+
+            const dpTan1 = ball.velocity.dot(tangent);
+            const dpTan2 = ball2.velocity.dot(tangent);
+            const dpNorm1 = ball.velocity.dot(normal);
+            const dpNorm2 = ball2.velocity.dot(normal);
+            const m1 = (dpNorm1 * (ball.mass - ball2.mass) + 2 * ball2.mass * dpNorm2) / (ball.mass + ball2.mass);
+            const m2 = (dpNorm2 * (ball2.mass - ball.mass) + 2 * ball.mass * dpNorm1) / (ball.mass + ball2.mass);
+            ball.velocity = tangent.multiply(dpTan1).add(normal.multiply(m1));
+            ball2.velocity = tangent.multiply(dpTan2).add(normal.multiply(m2));
+        }
     }
 }
