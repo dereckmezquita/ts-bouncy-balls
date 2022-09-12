@@ -17,7 +17,7 @@ export class Ball {
         radius: number = 5,
         vX: number = 0,
         vY: number = 0,
-        elasticity: number = 1,
+        elasticity: number = 0.75,
         colour: string = '#ff0000'
     ) {
         this.position = new Vec2(x, y);
@@ -85,14 +85,44 @@ export class Ball {
         this.velocity = direction.multiply(this.velocity.magnitude);
     }
 
-    // static checkBallCollision(ball2: Ball)
-
     // ------------------------------
     // helper methods
-    static draw(ctx: CanvasRenderingContext2D, ball: Ball): void {
-        ctx.beginPath();
-        ctx.arc(ball.drawPosition.x, ball.drawPosition.y, ball.radius, 0, Math.PI * 2);
-        ctx.fillStyle = ball.colour;
-        ctx.fill();
+    static draw(ctx: CanvasRenderingContext2D, ball: Ball, sprite_path?: string): void {
+        if (sprite_path) {
+            const sprite_image = new Image();
+            sprite_image.src = sprite_path;
+
+            ctx.drawImage(sprite_image, ball.drawPosition.x - ball.radius, ball.drawPosition.y - ball.radius, ball.radius * 2, ball.radius * 2);
+        } else {
+            ctx.beginPath();
+            ctx.arc(ball.drawPosition.x, ball.drawPosition.y, ball.radius, 0, Math.PI * 2);
+            ctx.fillStyle = ball.colour;
+            ctx.fill();
+        }
+    }
+
+    // ball ball collision
+    static isColliding(ball: Ball, ball2: Ball): boolean {
+        const distance = ball.position.subtract(ball2.position).magnitude;
+
+        if (distance <= ball.radius + ball2.radius) return true;
+        return false;
+    }
+
+    static calculateCollision(ball: Ball, ball2: Ball): void {
+        if (Ball.isColliding(ball, ball2)) {
+            // if balls collide then bounce
+            const normal = ball.position.subtract(ball2.position).normalise();
+            const tangent = new Vec2(-normal.y, normal.x);
+
+            const dpTan1 = ball.velocity.dot(tangent);
+            const dpTan2 = ball2.velocity.dot(tangent);
+            const dpNorm1 = ball.velocity.dot(normal);
+            const dpNorm2 = ball2.velocity.dot(normal);
+            const m1 = (dpNorm1 * (ball.mass - ball2.mass) + 2 * ball2.mass * dpNorm2) / (ball.mass + ball2.mass);
+            const m2 = (dpNorm2 * (ball2.mass - ball.mass) + 2 * ball.mass * dpNorm1) / (ball.mass + ball2.mass);
+            ball.velocity = tangent.multiply(dpTan1).add(normal.multiply(m1));
+            ball2.velocity = tangent.multiply(dpTan2).add(normal.multiply(m2));
+        }
     }
 }
