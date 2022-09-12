@@ -20,7 +20,8 @@ export class GameManager {
         friction: 0.01,
         gravity: 0.1,
         interBallAttraction: 0.1,
-        mouseAttractor: false
+        mouseAttractor: false,
+        ballsAttractor: false
     }
 
     ballParams = {
@@ -251,6 +252,9 @@ export class GameManager {
             const mouseAttractor_value = document.querySelector("#mouse-cog") as HTMLInputElement;
             this.universeParams.mouseAttractor = mouseAttractor_value.checked;
 
+            const interBallAttractor_value = document.querySelector("#inter-ball-cog") as HTMLInputElement;
+            this.universeParams.ballsAttractor = interBallAttractor_value.checked;
+
             // ------------------------------
             // ball radius
             ballRadius_label.innerHTML = `Ball radius (${this.ballParams.radius})`;
@@ -399,17 +403,30 @@ export class GameManager {
             }
 
             // ------------------------------
-            // ball collisions
+            // ball interactions
             for (let j = 0; j < this.balls.length; j++) {
                 const ball2 = this.balls[j];
                 if (ball != ball2) {
+                    // collisions
                     Ball.calculateCollision(ball, ball2);
+                    // inter ball gravity
+                    if (this.universeParams.ballsAttractor) {
+                        const distance = ball.position.distance(ball2.position);
+                        const gravity_force = (gravity_inter_ball_value * ball2.mass) / (4 * Math.PI * distance * distance);
+                        ball.applyForce(ball2.position.subtract(ball.position).normalise().multiply(gravity_force));
+                        ball2.applyForce(ball.position.subtract(ball2.position).normalise().multiply(gravity_force));
+                    }
                 }
             }
 
             // check for collisions with black holes
             for (const cog of this.blackHoles) {
-                Ball.calculateCollision(ball, cog);
+                // Ball.calculateCollision(ball, cog);
+                // remove if collision; this.balls.splice(i, 1);
+                // check if ball hits very centre of black hole
+                if (ball.position.distance(cog.position) < ball.radius * 0.25) {
+                    this.balls.splice(i, 1);
+                }
             }
         }
     }
