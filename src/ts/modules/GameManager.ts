@@ -24,7 +24,7 @@ export class GameManager {
     }
 
     ballParams = {
-        radius: 5,
+        radius: 1,
         elasticity: 0.75,
         angleNoise: 5, // degrees
         energyNoise: 0.3 // float
@@ -380,7 +380,8 @@ export class GameManager {
                 // gravity is stronger if the ball has more mass
                 // inverse square law dimishes the effect
                 const distance = ball.position.distance(cog.position);
-                ball.applyForce(cog.position.subtract(ball.position).normalise().multiply((gravity_inter_ball_value * cog.mass) / (distance ** 2)));
+                const gravity_force = (gravity_inter_ball_value * cog.mass) / (4 * Math.PI * distance * distance);
+                ball.applyForce(cog.position.subtract(ball.position).normalise().multiply(gravity_force));
             }
 
             // ------------------------------
