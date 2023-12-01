@@ -10,4 +10,4 @@ You can view the final interactive product of this project here: [dereckmezquita
 
 [![demo-bouncy-balls](.graphics/demo-bouncy-balls.gif)](https://dereckmezquita.github.io/ts-bouncy-balls/)
 
-[^1]: related to [github.com/dereckmezquita/cpp-bouncy-balls][https://github.com/dereckmezquita/cpp-bouncy-balls] bouncy balls in `C++`.
+[^1]: related to [github.com/dereckmezquita/cpp-bouncy-balls](https://github.com/dereckmezquita/cpp-bouncy-balls) bouncy balls in `C++`.
