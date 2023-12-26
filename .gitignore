@@ -3,6 +3,9 @@ public/
 
 src/images/
 
+# machine files
+.DS_Store
+
 # Logs
 logs
 *.log
