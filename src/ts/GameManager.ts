@@ -135,7 +135,7 @@ export class GameManager {
     }
 
     get getAverageSpeed() {
-        if(this.balls.length == 0) return 0;
+        if (this.balls.length == 0) return 0;
 
         let totalSpeed = 0;
         for (const ball of this.balls) {
@@ -146,7 +146,7 @@ export class GameManager {
     }
 
     get getAverageEnergy() {
-        if(this.balls.length == 0) return 0;
+        if (this.balls.length == 0) return 0;
 
         let totalEnergy = 0;
         for (const ball of this.balls) {
@@ -165,7 +165,7 @@ export class GameManager {
         const { innerWidth, innerHeight } = window;
         this.canvas.width = innerWidth * 0.9;
         this.canvas.height = innerHeight * 0.8;
-    
+
         this.recenter();
     }
 
@@ -323,19 +323,19 @@ export class GameManager {
     physicsUpdate(): void {
         for (let i = 0; i < this.balls.length; i++) {
             const ball = this.balls[i];
-    
+
             ball.position = ball.position.add(ball.velocity);
             ball.drawPosition = ball.position;
-    
+
             // if the ball goes off canvas remove from array
             if (ball.position.x > this.canvas.width || ball.position.x < 0 || ball.position.y > this.canvas.height || ball.position.y < 0) {
                 // balls.splice(i, 1);
             }
-    
+
             // if the ball hits wall bounce
             const xWallsCollide = (ball.position.x > this.canvas.width - ball.radius || ball.position.x < ball.radius);
             const yWallsCollide = (ball.position.y > this.canvas.height - ball.radius || ball.position.y < ball.radius);
-    
+
             if (xWallsCollide) {
                 if (!ball.xColliding) { // Prevent ball wall collision event from firing multiple times IN A ROW (back to back).
                     ball.xColliding = true;
@@ -345,7 +345,7 @@ export class GameManager {
             } else {
                 ball.xColliding = false;
             }
-    
+
             if (yWallsCollide) {
                 if (!ball.yColliding) {
                     ball.yColliding = true;
@@ -355,7 +355,7 @@ export class GameManager {
             } else {
                 ball.yColliding = false;
             }
-    
+
             if (xWallsCollide || yWallsCollide) {
                 const mag = ball.velocity.magnitude; //Convsere ball's velocity
                 let dir = ball.velocity.toRadians; //Angle of ball in radians
@@ -363,7 +363,7 @@ export class GameManager {
                 dir += randFloat(-angleNoiseRads, angleNoiseRads);
                 ball.velocity = Vec2.fromAngle(dir).multiply(mag); // convert direction (normalised vector) and multiply by magnitude to get original vector
             }
-    
+
             // ------------------------------
             // gravity down
             // avoids balls sinking into the floor
@@ -374,7 +374,7 @@ export class GameManager {
             const gravity_inter_ball_value = yWallsCollide ? 0 : this.universeParams.interBallAttraction * 10;
 
             // gravity to mouse pos
-            if(this.universeParams.mouseAttractor) {
+            if (this.universeParams.mouseAttractor) {
                 ball.applyForce(this.mousePos.subtract(ball.position).normalise.multiply(gravity_inter_ball_value));
             }
 
