@@ -1,7 +1,6 @@
-
-import { Vec2 } from "./Vec2";
-import { Ball } from "./Ball";
-import { randFloat } from "./helpers";
+import { Vec2 } from "./modules/Vec2";
+import { Ball } from "./modules/Ball";
+import { randFloat } from "./modules/helpers";
 
 export class GameManager {
     canvas: HTMLCanvasElement;

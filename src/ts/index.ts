@@ -1,5 +1,4 @@
-
-import { GameManager } from "./modules/GameManager";
+import { GameManager } from "./GameManager";
 
 const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
