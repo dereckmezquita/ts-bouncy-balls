@@ -359,7 +359,7 @@ export class GameManager {
     
             if (xWallsCollide || yWallsCollide) {
                 const mag = ball.velocity.magnitude; //Convsere ball's velocity
-                let dir = ball.velocity.toAngle(); //Angle of ball in radians
+                let dir = ball.velocity.toRadians; //Angle of ball in radians
                 const angleNoiseRads = this.ballParams.angleNoise * Math.PI / 180; //Convert bounce noise from degrees to radians
                 dir += randFloat(-angleNoiseRads, angleNoiseRads);
                 ball.velocity = Vec2.fromAngle(dir).multiply(mag); // convert direction (normalised vector) and multiply by magnitude to get original vector

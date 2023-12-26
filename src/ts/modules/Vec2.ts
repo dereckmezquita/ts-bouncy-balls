@@ -59,7 +59,7 @@ export class Vec2 {
     }
 
     // convert cartesian coordinates to radian angle
-    toAngle(): number {
+    get toRadians(): number {
         return Math.atan2(this.y, this.x);
     }
 
