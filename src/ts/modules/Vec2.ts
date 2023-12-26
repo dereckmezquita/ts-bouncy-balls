@@ -1,4 +1,3 @@
-
 // https://docs.godotengine.org/en/stable/tutorials/math/vector_math.html
 
 export class Vec2 {
