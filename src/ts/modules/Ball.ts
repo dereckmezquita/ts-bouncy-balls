@@ -96,7 +96,12 @@ export class Ball {
             const sprite_image = new Image();
             sprite_image.src = sprite_path;
 
-            ctx.drawImage(sprite_image, ball.drawPosition.x - ball.radius, ball.drawPosition.y - ball.radius, ball.radius * 2, ball.radius * 2);
+            ctx.drawImage(
+                sprite_image,
+                ball.drawPosition.x - ball.radius,
+                ball.drawPosition.y - ball.radius,
+                ball.radius * 2, ball.radius * 2
+            );
         } else {
             ctx.beginPath();
             ctx.arc(ball.drawPosition.x, ball.drawPosition.y, ball.radius, 0, Math.PI * 2);
