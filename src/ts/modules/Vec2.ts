@@ -2,7 +2,8 @@
 // https://docs.godotengine.org/en/stable/tutorials/math/vector_math.html
 
 export class Vec2 {
-    x; y;
+    x: number;
+    y: number;
 
     constructor(x: number = 0, y: number = 0) {
         this.x = x;
