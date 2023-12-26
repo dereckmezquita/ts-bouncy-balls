@@ -66,7 +66,7 @@ export class Ball {
         // c = sqrt(e / m / 2)
         const newMagnitude = Math.sqrt(this.energy / (this.mass / 2));
 
-        (Math.round(newMagnitude) == 0 ? this.velocity = new Vec2() : this.velocity = this.velocity.normalise().multiply(newMagnitude));
+        (Math.round(newMagnitude) == 0 ? this.velocity = new Vec2() : this.velocity = this.velocity.normalise.multiply(newMagnitude));
     }
 
     calculateEnergy(): void {
@@ -112,7 +112,7 @@ export class Ball {
     static calculateCollision(ball: Ball, ball2: Ball): void {
         if (Ball.isColliding(ball, ball2)) {
             // if balls collide then bounce
-            const normal = ball.position.subtract(ball2.position).normalise();
+            const normal = ball.position.subtract(ball2.position).normalise;
             const tangent = new Vec2(-normal.y, normal.x);
 
             const dpTan1 = ball.velocity.dot(tangent);

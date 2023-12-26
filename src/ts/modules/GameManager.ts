@@ -376,7 +376,7 @@ export class GameManager {
 
             // gravity to mouse pos
             if(this.universeParams.mouseAttractor) {
-                ball.applyForce(this.mousePos.subtract(ball.position).normalise().multiply(gravity_inter_ball_value));
+                ball.applyForce(this.mousePos.subtract(ball.position).normalise.multiply(gravity_inter_ball_value));
             }
 
             // black hole gravity
@@ -385,7 +385,7 @@ export class GameManager {
                 // inverse square law dimishes the effect
                 const distance = ball.position.distance(cog.position);
                 const gravity_force = (gravity_inter_ball_value * cog.mass) / (4 * Math.PI * distance * distance);
-                ball.applyForce(cog.position.subtract(ball.position).normalise().multiply(gravity_force));
+                ball.applyForce(cog.position.subtract(ball.position).normalise.multiply(gravity_force));
             }
 
             // ------------------------------
@@ -413,8 +413,8 @@ export class GameManager {
                     if (this.universeParams.ballsAttractor) {
                         const distance = ball.position.distance(ball2.position);
                         const gravity_force = (gravity_inter_ball_value * ball2.mass) / (4 * Math.PI * distance * distance);
-                        ball.applyForce(ball2.position.subtract(ball.position).normalise().multiply(gravity_force));
-                        ball2.applyForce(ball.position.subtract(ball2.position).normalise().multiply(gravity_force));
+                        ball.applyForce(ball2.position.subtract(ball.position).normalise.multiply(gravity_force));
+                        ball2.applyForce(ball.position.subtract(ball2.position).normalise.multiply(gravity_force));
                     }
                 }
             }

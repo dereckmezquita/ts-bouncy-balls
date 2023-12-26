@@ -31,7 +31,7 @@ export class Vec2 {
 
     // calculate magnitude
     // magnitude = sqrt(x^2 + y^2)
-    normalise(): Vec2 {
+    get normalise(): Vec2 {
         if (this.magnitude > 0) return new Vec2(this.x / this.magnitude, this.y / this.magnitude);
 
         throw new Error("Cannot normalise a vector with magnitude 0");
