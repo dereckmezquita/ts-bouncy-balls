@@ -45,20 +45,24 @@ export class Ball {
     // takes a number to add energy to the ball
     // we are adding to the normalised vector of the velocity
     addEnergy(energy: number): void {
-        this.energy += energy;
-        this.calculateVelocity();
+        if (energy !== 0) {
+            this.energy += energy;
+            this.calculateVelocity();
+        }
     }
 
     removeEnergy(energy: number): void {
-        const newEnergy = this.energy - energy;
+        if (energy !== 0) {
+            const newEnergy = this.energy - energy;
 
-        if (newEnergy < 0) {
-            this.energy = 0;
-        } else {
-            this.energy = newEnergy;
+            if (newEnergy < 0) {
+                this.energy = 0;
+            } else {
+                this.energy = newEnergy;
+            }
+
+            this.calculateVelocity();
         }
-
-        this.calculateVelocity();
     }
 
     // kinectic energy is calculated: ke = 1/2 * m * v^2
