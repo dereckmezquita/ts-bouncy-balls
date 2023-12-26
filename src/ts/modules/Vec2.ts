@@ -22,6 +22,10 @@ export class Vec2 {
     }
 
     divide(scalar: number): Vec2 {
+        if (scalar === 0) {
+            throw new Error("Cannot divide by 0");
+        }
+
         return new Vec2(this.x / scalar, this.y / scalar)
     }
 
