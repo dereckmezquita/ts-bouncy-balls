@@ -61,16 +61,16 @@ export class Ball {
         this.calculateVelocity();
     }
 
-    // kinectic energy is calculated by m/2 * velocity ^ 2
+    // kinectic energy is calculated: ke = 1/2 * m * v^2
     // we are calculating the magnitude of the ball
     // reminder magnitude is the lenght of a vector
     // then we can apply (multiply) the magnitude to the velocity after it is normalised
     calculateVelocity(): void {
-        // e = mc^2
-        // c = sqrt(e / m / 2)
-        const newMagnitude = Math.sqrt(this.energy / (this.mass / 2));
+        const newMagnitude = Math.sqrt(2 * this.energy / this.mass);
 
-        (Math.round(newMagnitude) == 0 ? this.velocity = new Vec2() : this.velocity = this.velocity.normalise.multiply(newMagnitude));
+        Math.round(newMagnitude) == 0 ?
+            this.velocity = new Vec2() :
+            this.velocity = this.velocity.normalise.multiply(newMagnitude);
     }
 
     calculateEnergy(): void {
