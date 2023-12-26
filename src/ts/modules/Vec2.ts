@@ -55,7 +55,7 @@ export class Vec2 {
     // returns normalised vector
     // values between 0 and 1
     direction(v: Vec2): Vec2 {
-        return v.subtract(this).normalise();
+        return v.subtract(this).normalise;
     }
 
     // convert cartesian coordinates to radian angle
