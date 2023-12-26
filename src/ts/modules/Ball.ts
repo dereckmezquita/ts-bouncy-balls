@@ -5,7 +5,12 @@ export class Ball {
     elasticity: number = 1;
     xColliding: boolean = false;
     yColliding: boolean = false;
-    position; drawPosition; velocity; mass; colour; radius;
+    position: Vec2;
+    drawPosition: Vec2;
+    velocity: Vec2;
+    mass: number;
+    colour: string;
+    radius: number;
 
     density: number = 0.01;
 
