@@ -41,6 +41,8 @@ export class GameManager {
 
     // ------------------------------
     constructor(canvas: HTMLCanvasElement) {
+        this.animate = this.animate.bind(this);
+
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
@@ -294,7 +296,7 @@ export class GameManager {
 
     // ------------------------------
     animate(): void {
-        requestAnimationFrame(this.animate.bind(this));
+        requestAnimationFrame(this.animate);
 
         // clear the screen to draw again every frame
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
