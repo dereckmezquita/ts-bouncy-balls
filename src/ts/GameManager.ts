@@ -1,7 +1,7 @@
 import { Vec2 } from "./modules/Vec2";
 import { Ball } from "./modules/Ball";
 import { randFloat } from "./modules/helpers";
-import updateUserSettings from "./methods/GameManager/updateUserSettings";
+import userSettings from "./methods/GameManager/userSettings";
 
 export class GameManager {
     canvas: HTMLCanvasElement;
@@ -134,29 +134,24 @@ export class GameManager {
 
         // ------------------------------
         // print to html every n
-        this.updateUserSettings();
+        this.userSettings();
     }
 
-    get getAverageSpeed() {
+    averageSpeed: string = "";
+    averageEnergy: string = "";
+
+    private calculateStats() {
         if (this.balls.length == 0) return 0;
 
         let totalSpeed = 0;
-        for (const ball of this.balls) {
-            totalSpeed += ball.velocity.magnitude;
-        }
-
-        return (totalSpeed / this.balls.length).toFixed(3);
-    }
-
-    get getAverageEnergy() {
-        if (this.balls.length == 0) return 0;
-
         let totalEnergy = 0;
         for (const ball of this.balls) {
+            totalSpeed += ball.velocity.magnitude;
             totalEnergy += ball.energy;
         }
 
-        return (totalEnergy / this.balls.length).toFixed(3);
+        this.averageSpeed = (totalSpeed / this.balls.length).toFixed(3);
+        this.averageEnergy = (totalEnergy / this.balls.length).toFixed(3);
     }
 
     recenter(): void {
@@ -220,13 +215,14 @@ export class GameManager {
     }
 
     // ------------------------------
-    updateUserSettings(): void {
-        updateUserSettings.call(this);
+    userSettings(): void {
+        userSettings.call(this);
     }
 
     updateGameStats(): void {
+        this.calculateStats();
         const numBallsElement = document.querySelector('.num-balls') as HTMLDivElement;
-        numBallsElement.innerHTML = `Balls: ${this.balls.length}; Average speed: ${this.getAverageSpeed}; Average energy: ${this.getAverageEnergy}`;
+        numBallsElement.innerHTML = `Balls: ${this.balls.length}; Average speed: ${this.averageSpeed}; Average energy: ${this.averageEnergy}`;
     }
 
     // ------------------------------

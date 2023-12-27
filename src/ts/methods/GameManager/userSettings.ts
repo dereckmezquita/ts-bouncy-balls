@@ -19,7 +19,7 @@ export default function updateUserSettings(this: any) {
         this.physicsInterval = parseInt((document.querySelector('.time-slider-value') as HTMLInputElement).value);
 
         // Update innerHTML for display elements
-        (document.querySelector('.num-balls') as HTMLDivElement).innerHTML = `Balls: ${this.balls.length}; Average speed: ${this.getAverageSpeed}; Average energy: ${this.getAverageEnergy}`;
+        (document.querySelector('.num-balls') as HTMLDivElement).innerHTML = `Balls: ${this.balls.length}; Average speed: ${this.averageSpeed}; Average energy: ${this.averageEnergy}`;
         (document.querySelector('.ball-radius-label') as HTMLDivElement).innerHTML = `Ball radius (${this.ballParams.radius})`;
         (document.querySelector('.ball-elasticity-label') as HTMLDivElement).innerHTML = `Ball elasticity (${this.ballParams.elasticity})`;
         (document.querySelector('.energy-slider-label') as HTMLDivElement).innerHTML = `Add energy (${this.userParams.addEnergySlider})`;
