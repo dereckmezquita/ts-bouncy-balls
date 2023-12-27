@@ -173,7 +173,11 @@ export class GameManager {
     }
 
     // check the mouse pos with setinterval
-    spawnBall(fromVec: Vec2, colour: string = `hsl(${Math.random() * 360}, 100%, 50%)`, randOffset: boolean = true): void {
+    spawnBall(
+        fromVec: Vec2,
+        colour: string = `hsl(${Math.random() * 360}, 100%, 50%)`,
+        randOffset: boolean = true
+    ): void {
         const mousePos = this.mousePos;
 
         // to avoid overlapping balls on spawn slight offset
