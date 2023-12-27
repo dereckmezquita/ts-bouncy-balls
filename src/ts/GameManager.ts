@@ -358,6 +358,20 @@ export class GameManager {
                 ball.yColliding = false;
             }
 
+            // floor collision; avoid balls falling through floor
+            if (ball.position.y + ball.radius > this.canvas.height) {
+                // Adjust ball position to sit right on the floor
+                ball.position.y = this.canvas.height - ball.radius;
+
+                // Reflect the y-velocity and apply damping factor
+                const dampingFactor = 0; // Adjust as needed for realism
+                ball.velocity.y = -ball.velocity.y * ball.elasticity * dampingFactor;
+
+                ball.yColliding = true;
+            } else {
+                ball.yColliding = false;
+            }
+
             if (xWallsCollide || yWallsCollide) {
                 const mag = ball.velocity.magnitude; //Convsere ball's velocity
                 let dir = ball.velocity.toRadians; //Angle of ball in radians
