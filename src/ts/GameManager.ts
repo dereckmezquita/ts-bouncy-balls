@@ -328,7 +328,7 @@ export class GameManager {
                 ball.position.y = this.canvas.height - ball.radius;
 
                 // Reflect the y-velocity and apply damping factor
-                const dampingFactor = 0; // Adjust as needed for realism
+                const dampingFactor = 1; // Adjust as needed for realism
                 ball.velocity.y = -ball.velocity.y * ball.elasticity * dampingFactor;
 
                 ball.yColliding = true;
